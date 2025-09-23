@@ -1,3 +1,2 @@
-import numpy as np
+from heterogeneities.utils import linear_interpolation, view_Apollo
 
-print(np.random.rand(5))
