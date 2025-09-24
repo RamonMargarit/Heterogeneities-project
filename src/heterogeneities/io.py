@@ -51,9 +51,8 @@ def view_apollo(stream=None,
             tr.remove_response(inventory=inv, pre_filt=pre_filt, output="DISP",
                        water_level=None, plot=plot_response)
             if plot_response:
-                plt.show()
-            # apply the mask back to the trace 
-            tr.data = np.ma.masked_array(tr, mask=original_mask)
+                tr.plot(equal_scale=False, size=(1000, 600), method="full", show=False)
+            tr.data = np.ma.masked_array(tr.data, mask=original_mask)
 
         elif tr.stats.channel in ['SHZ']:
 
@@ -63,13 +62,26 @@ def view_apollo(stream=None,
             pre_filt = [1,2,11,13] 
             tr.remove_response(inventory=inv, pre_filt=pre_filt, output="DISP",
                        water_level=None, plot=plot_response)
-            if plot_response:
-                plt.show()
+            #if plot_response:
+            #    plt.show()
             
             # apply the mask back to the trace 
-            tr.data = np.ma.masked_array(tr, mask=original_mask)
+            tr.data = np.ma.masked_array(tr.data, mask=original_mask)
 
     if plot_seismogram:
         stream.plot(equal_scale=False,size=(1000,600),method='full')
     
     return stream  # return it so tests/notebooks can use it
+
+def plot_spectrogram(dB, extent, trace, vmin=None, vmax=None, cmap='inferno', show=False):
+    fig, ax = plt.subplots(figsize=(12, 5))
+    im = ax.imshow(dB, aspect="auto", extent=extent, origin="lower", cmap=cmap, vmin=vmin, vmax=vmax)
+    ax.set_ylabel("Frequency (Hz)")
+    ax.set_xlabel("Time (s)")
+    title = f"{trace.stats.network}.{trace.stats.station}.{trace.stats.channel} | {trace.stats.starttime.date} {trace.stats.starttime.time}"
+    ax.set_title(title)
+    cbar = fig.colorbar(im, ax=ax, pad=0.01)
+    cbar.set_label("Power (dB)", rotation=270, labelpad=20)
+    plt.tight_layout()
+    if show:
+        plt.show()
