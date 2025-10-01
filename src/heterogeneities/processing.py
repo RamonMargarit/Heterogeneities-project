@@ -51,7 +51,7 @@ def compute_spectrogram(trace, window_sec=0.1, db_limits=None):
     fs = trace.stats.sampling_rate
     print(f"Sampling rate: {fs} Hz")
     nfft = int(fs * window_sec)
-    noverlap = int(nfft * 0.4)
+    noverlap = int(nfft * 0.8)
     x = np.asarray(trace.data, dtype=float)
     x = np.nan_to_num(x, nan=0.0, posinf=0.0, neginf=0.0)
     Pxx, freqs, bins = plt.mlab.specgram(x, NFFT=nfft, Fs=fs, noverlap=noverlap)
