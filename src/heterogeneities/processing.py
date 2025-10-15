@@ -173,3 +173,60 @@ def compute_and_save_hypo_distances(
     df_time.to_csv(out_path, index=False)
 
     return df_time, out_path
+import numpy as np
+import pandas as pd
+
+import numpy as np
+import pandas as pd
+
+def compute_and_save_epicentral_distances(
+    df_time: pd.DataFrame,
+    file_path: str,
+    R_body_km: float = 1737.4,  # default: Moon radius
+    stations: dict | None = None,
+    out_suffix: str = "_with_epidist.csv"
+):
+
+
+    # Default station locations (lat, lon in deg)
+    if stations is None:
+        stations = {
+            "A14": (-3.645, 342.552),
+            "A15": (26.132,   3.633),
+            "A16": (-8.976,  15.499),
+        }
+
+    # Check required columns
+    required_cols = {"Lat", "Long"}
+    missing = required_cols - set(df_time.columns)
+    if missing:
+        raise ValueError(f"df_time is missing required columns: {sorted(missing)}")
+
+    # Convert event coordinates to radians
+    φ_event = np.deg2rad(df_time["Lat"].to_numpy())
+    λ_event = np.deg2rad(df_time["Long"].to_numpy())
+
+    # Compute distance to each station
+    for key, (slat, slon) in stations.items():
+        φ_stn = np.deg2rad(slat)
+        λ_stn = np.deg2rad(slon)
+        Δλ = λ_event - λ_stn
+
+        # Law of cosines for spherical distance
+        cosΔ = np.sin(φ_event) * np.sin(φ_stn) + np.cos(φ_event) * np.cos(φ_stn) * np.cos(Δλ)
+        cosΔ = np.clip(cosΔ, -1.0, 1.0)  # numerical safety
+        Δ_rad = np.arccos(cosΔ)          # radians
+        Epi_deg = np.rad2deg(Δ_rad)        # degrees
+        D_km = R_body_km * Δ_rad         # km
+
+        # Add both columns
+        df_time[f"epi_dist_{key}_deg"] = Epi_deg
+        df_time[f"epi_dist_{key}_km"] = D_km
+
+    # Save updated file
+    out_path = file_path if file_path.endswith(".csv") else f"{file_path}.csv"
+    out_path = out_path.replace(".csv", f"{out_suffix}")
+    df_time.to_csv(out_path, index=False)
+
+    return df_time, out_path
+

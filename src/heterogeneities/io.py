@@ -69,6 +69,8 @@ def view_apollo(stream=None,
             
             # apply the mask back to the trace 
             tr.data = np.ma.masked_array(tr.data, mask=original_mask)
+
+
 def get_Apollo(starttime=None, endtime=None, station="A11", channel="SHZ", 
                 units="DU", year=None, month=None):
     """
@@ -77,19 +79,6 @@ def get_Apollo(starttime=None, endtime=None, station="A11", channel="SHZ",
     If units=='DU' (default), returns raw digital units.
     If units=='ACC', instrument response is removed so that output is acceleration.
     
-    You can specify either:
-      1) starttime and endtime (as UTCDateTime objects), OR
-      2) year and month (as integers) to retrieve the entire month.
-
-    :param starttime: ObsPy UTCDateTime start
-    :param endtime:   ObsPy UTCDateTime end
-    :param station:   Station code (e.g., 'A11')
-    :param channel:   Channel code (e.g., 'SHZ')
-    :param units:     'DU' for raw digital units, or 'ACC' for acceleration
-    :param year:      Optional integer specifying year if selecting entire month
-    :param month:     Optional integer specifying month if selecting entire month
-    :return:          Tuple of:
-                      (Trace with mask applied, [starttime, endtime, station, channel])
     """
     import numpy as np
     import pandas as pd
@@ -188,10 +177,9 @@ def get_Apollo(starttime=None, endtime=None, station="A11", channel="SHZ",
             if units.upper() == 'VEL':
                 # Different pre-filter band for SHZ
                 #pre_filt = [1/100, 1/50, 20, 22]
-                #pre_filt = [1/100, 1/50, 50, 52]
-
+                pre_filt = [0.05, 0.1, 14.0, 15.0]
                 tr.remove_response(inventory=inv,
-                                   output="VEL", water_level=0, plot=False)
+                                   output="VEL", water_level=None, pre_filt=pre_filt, plot=True)
             tr.data = np.ma.masked_array(tr.data, mask=original_mask)
 
     # For simplicity, return just the first Trace in the Stream
@@ -222,7 +210,7 @@ def plot_spectrogram_title(dB, extent, trace, vmin=None, vmax=None, cmap='infern
     ax.set_ylabel("Frequency (Hz)")
     #ax.set_yscale('log')
     ax.set_xlabel("Time (s)")
-    #ax.set_ylim(0.1,25)
+    ax.set_ylim(0.1,25)
     title = (
         f"{trace.stats.network}."
         f"{trace.stats.station}."
