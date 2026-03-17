@@ -1,5 +1,5 @@
 #!/bin/sh
-'''exec' "/Users/ramonmargarit/IPGP Dropbox/Ramon Margarit/PhD/Science/Modelling_Envelopes/.venv-raypaths/bin/python3.11" "$0" "$@"
+'''exec' "/Users/ramonmargarit/IPGP Dropbox/Ramon Margarit/PhD/Science/Modelling_Envelopes/.venv-raypaths/bin/python" "$0" "$@"
 ' '''
 import sys
 from Cython.Build.Cythonize import main
