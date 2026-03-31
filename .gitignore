@@ -1,0 +1,4 @@
+results/.DS_Store
+results/Plots_Single/
+notebooks/results/LSQ_Fitting/*.png
+notebooks/results/LSQ_Fitting/**/*.png
