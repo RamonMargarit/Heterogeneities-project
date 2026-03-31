@@ -2,3 +2,6 @@ results/.DS_Store
 results/Plots_Single/
 notebooks/results/LSQ_Fitting/*.png
 notebooks/results/LSQ_Fitting/**/*.png
+
+data/raw/thick-2-35.5-12-3400.txt
+notebooks/results/grail_crust_thickness_table.csv
